@@ -1,0 +1,38 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天執行一次，同步時間可以根據需要調整
+  workflow_dispatch:    # 允許手動觸發
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Setup Git
+        run: |
+          git config --global user.name 'Tspm1eca'
+          git config --global user.email 'tspm4gl@gmail.com'
+          
+      - name: Add upstream repository
+        run: git remote add upstream https://github.com/wzdnzd/aggregator.git
+        
+      - name: Fetch upstream
+        run: git fetch upstream
+
+      - name: Merge upstream changes
+        run: |
+          git checkout main
+          git merge upstream/main
+          
+      - name: Push changes
+        run: |
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
